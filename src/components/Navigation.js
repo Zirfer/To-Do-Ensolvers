@@ -1,11 +1,22 @@
-import React from 'react';
 
-function Navigation() {
+import { Navbar, Container, Nav } from 'react-bootstrap'
+import { Link } from "react-router-dom";
+
+const Navigation = () => {
+
     return (
-        <div>
-            <h1>Items</h1>
-        </div>
-    );
-};
-
-export default Navigation;
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+            <Container>
+                <Navbar.Brand as={Link} to="/">Pc Electronics</Navbar.Brand>
+                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                <Navbar.Collapse id="responsive-navbar-nav">
+                    <Nav className="me-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/items">Create item</Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar >
+    )
+}
+export default Navigation

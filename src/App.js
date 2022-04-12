@@ -13,8 +13,8 @@ function App() {
       </div>
       <div>
         <Routes>
-          <Route path="/pc-electronics/" element={<Main />} />
-          <Route path="/products/create" element={<ItemsList />} />
+          <Route path="/" element={<Main />} />
+          <Route path="/items" element={<ItemsList />} />
           <Route element={<NotFound />} />
         </Routes>
       </div>
