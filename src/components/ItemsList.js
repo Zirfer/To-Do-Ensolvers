@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from 'axios'
 
 function ItemsList() {
@@ -13,11 +13,11 @@ function ItemsList() {
         folderId: 0,
         content: '',
         userId: 1,
+        completed: false,
         _id: ''
     })
 
     let { idFolder } = useParams();
-    console.log(idFolder);
 
     useEffect(() => {
         getItems(idFolder);
@@ -54,11 +54,12 @@ function ItemsList() {
         if (data._id === '') {
             await axios.post('http://localhost:4000/api/items', data)
                 .then(function (res) {
-                    getItems()
+                    getItems(idFolder)
                     setData({
                         folderId: 0,
                         content: '',
                         userId: 1,
+                        completed: false,
                         _id: ''
                     })
                     alert(res.data.message)
@@ -66,11 +67,12 @@ function ItemsList() {
         } else {
             await axios.put('http://localhost:4000/api/items/' + data._id, data)
                 .then(function (res) {
-                    getItems()
+                    getItems(idFolder)
                     setData({
                         folderId: 0,
                         content: '',
                         userId: 1,
+                        completed: false,
                         _id: ''
                     })
                     alert(res.data.message)
@@ -88,7 +90,7 @@ function ItemsList() {
         if (window.confirm('¿Do you want to delete this item?')) {
             await axios.delete('http://localhost:4000/api/items/' + id)
                 .then(function (res) {
-                    getItems()
+                    getItems(idFolder)
                     alert(res.data.message)
                 })
         }
@@ -99,8 +101,26 @@ function ItemsList() {
             folderId: 0,
             content: '',
             userId: 1,
+            completed: false,
             _id: ''
         })
+    }
+
+    async function handleCompleted(e) {
+        const id = e.target.id;
+        const completed = e.target.checked
+        await axios.put('http://localhost:4000/api/items/completed/' + id, { completed })
+            .then(function (res) {
+                getItems(idFolder)
+                setData({
+                    folderId: 0,
+                    content: '',
+                    userId: 1,
+                    completed: false,
+                    _id: ''
+                })
+                alert(res.data.message)
+            })
     }
 
     function handleInput(e) {
@@ -108,88 +128,126 @@ function ItemsList() {
     }
 
     return (
-        <Row>
-            <Col md={4} className="p-4">
-                <div className="card" >
-                    <div className="card-body">
-                        <Form.Group className="mb-3">
-                            <Form.Label>Folder</Form.Label>
-                            <Form.Select
-                                name="folderId"
-                                value={data.folderId}
-                                onChange={(e) => handleInput(e)}
+        <div>
+            {idFolder ?
+                <Row style={{ marginBottom: '-30px' }}>
+                    <Col md={9} sm={8} xs={8} className="p-4" auto>
+                        <h2>{'Folder > ' + folder.name}</h2>
+                    </Col>
+                    <Col md={3} sm={4} xs={4} className="p-4">
+                        <Link
+                            className="btn btn-secondary justify-content left m-1"
+                            to={"/folders"}
+                        >
+                            Go back
+                        </Link>
+                    </Col>
+                </Row>
+                : ''
+            }
+            <Row>
+                <Col md={5} className="p-4">
+                    <div className="card" >
+                        <div className="card-body">
+                            <Form.Group className="mb-3">
+                                <Form.Label>Folder</Form.Label>
+                                <Form.Select
+                                    name="folderId"
+                                    value={data.folderId}
+                                    onChange={(e) => handleInput(e)}
+                                >
+                                    <option>Select one</option>
+                                    {
+                                        folders.map((folder, index) =>
+                                            <option key={index} value={folder._id}>{folder.name}</option>
+                                        )
+                                    }
+                                </Form.Select>
+                                <Form.Label>Content</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    name="content"
+                                    placeholder="Enter a content"
+                                    value={data.content}
+                                    onChange={(e) => handleInput(e)}
+                                />
+                                <Form.Check
+                                    checked={data.completed}
+                                    name="completed"
+                                    type='checkbox'
+                                    label='Completed'
+                                    onChange={(e) => handleInput(e)}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="card-footer">
+                            <Button
+                                variant="success"
+                                className="left m-1"
+                                onClick={() => saveItem()}
                             >
-                                <option>Select one</option>
-                                {
-                                    folders.map((folder, index) =>
-                                        <option key={index} value={folder._id}>{folder.name}</option>
-                                    )
-                                }
-                            </Form.Select>
-                            <Form.Label>Content</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                name="content"
-                                placeholder="Enter a content"
-                                value={data.content}
-                                onChange={(e) => handleInput(e)}
-                            />
-                        </Form.Group>
+                                Save
+                            </Button>
+                            <Button
+                                variant="primary"
+                                className="left m-1"
+                                onClick={() => cleanItem()}
+                            >
+                                Clean
+                            </Button>
+                        </div >
                     </div>
-                    <div className="card-footer">
-                        <Button
-                            variant="success"
-                            className="left m-1"
-                            onClick={() => saveItem()}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            variant="primary"
-                            className="left m-1"
-                            onClick={() => cleanItem()}
-                        >
-                            Clean
-                        </Button>
-                    </div >
-                </div>
-            </Col>
-            <Col md={8} className="p-4">
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Folder</th>
-                            <th>Content</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.map(item =>
-                            <tr key={item._id}>
-                                <td>{item.folderId ? item.folderId.name : ''}</td>
-                                <td>{item.content}</td>
-                                <td>
-                                    <Button
-                                        variant="primary"
-                                        className="justify-content left m-1"
-                                        onClick={() => getItem(item._id)}
-                                    >
-                                        <FaEdit />
-                                    </Button>
-                                    <Button
-                                        variant="danger"
-                                        className="justify-content left m-1"
-                                        onClick={() => deleteItem(item._id)}
-                                    >
-                                        <FaTrashAlt />
-                                    </Button>
-                                </td>
+                </Col>
+                <Col md={7} className="p-4">
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Folder</th>
+                                <th>Content</th>
+                                <th>Completed</th>
+                                <th>Actions</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
-            </Col>
-        </Row>
+                        </thead>
+                        <tbody>
+                            {items.map(item =>
+                                <tr key={item._id}>
+                                    <td>{item.folderId ? item.folderId.name : ''}</td>
+                                    <td>{item.content}</td>
+                                    <td align='center'>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                checked={item.completed}
+                                                name={"completed_" + item._id}
+                                                id={item._id}
+                                                onChange={(e) => handleCompleted(e)}
+                                            />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <Button
+                                            variant="primary"
+                                            className="justify-content left m-1"
+                                            onClick={() => getItem(item._id)}
+                                        >
+                                            <FaEdit />
+                                        </Button>
+                                        <Button
+                                            variant="danger"
+                                            className="justify-content left m-1"
+                                            onClick={() => deleteItem(item._id)}
+                                        >
+                                            <FaTrashAlt />
+                                        </Button>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </Col>
+            </Row>
+        </div >
     )
 }
 

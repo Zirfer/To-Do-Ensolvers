@@ -12,10 +12,10 @@ import './App.css'
 function App() {
   return (
     <Router>
-      <div>
-        <Navigation />
-      </div>
-      <div className="container">
+      <div className="container-fluid">
+        <div>
+          <Navigation />
+        </div>
         <Routes>
           <Route exact path="/" element={<Main />} />
           <Route path="/items" element={<ItemsList />} >

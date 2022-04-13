@@ -80,7 +80,7 @@ function FolderList() {
 
     return (
         <Row>
-            <Col md={4} className="p-4">
+            <Col md={5} className="p-4">
                 <div className="card" >
                     <div className="card-body">
                         <Form.Group className="mb-3">
@@ -111,7 +111,7 @@ function FolderList() {
                     </div >
                 </div>
             </Col>
-            <Col md={8} className="p-4">
+            <Col md={7} className="p-4">
                 <table className="table table-striped">
                     <thead>
                         <tr>
