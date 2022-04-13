@@ -17,8 +17,10 @@ function FolderList() {
         getFolders();
     }, [])
 
+    let baseURL = 'https://to-do-ensolvers.herokuapp.com';
+
     async function getFolders() {
-        await axios.get('http://localhost:4000/api/folders')
+        await axios.get(baseURL + '/api/folders')
             .then(function (res) {
                 setFolders(res.data)
             })
@@ -26,7 +28,7 @@ function FolderList() {
 
     async function saveFolder() {
         if (data._id === '') {
-            await axios.post('http://localhost:4000/api/folders', data)
+            await axios.post(baseURL + '/api/folders', data)
                 .then(function (res) {
                     getFolders()
                     setData({
@@ -37,7 +39,7 @@ function FolderList() {
                     alert(res.data.message)
                 })
         } else {
-            await axios.put('http://localhost:4000/api/folders/' + data._id, data)
+            await axios.put(baseURL + '/api/folders/' + data._id, data)
                 .then(function (res) {
                     getFolders()
                     setData({
@@ -51,14 +53,14 @@ function FolderList() {
     }
 
     async function getFolder(id) {
-        await axios.get('http://localhost:4000/api/folders/' + id)
+        await axios.get(baseURL + '/api/folders/' + id)
             .then(function (res) {
                 setData(res.data)
             })
     }
     async function deleteFolder(id) {
         if (window.confirm('¿Do you want to delete this folder?')) {
-            await axios.delete('http://localhost:4000/api/folders/' + id)
+            await axios.delete(baseURL + '/api/folders/' + id)
                 .then(function (res) {
                     getFolders()
                     alert(res.data.message)

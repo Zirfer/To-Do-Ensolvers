@@ -18,6 +18,7 @@ function ItemsList() {
     })
 
     let { idFolder } = useParams();
+    let baseURL = 'https://to-do-ensolvers.herokuapp.com';
 
     useEffect(() => {
         getItems(idFolder);
@@ -26,7 +27,7 @@ function ItemsList() {
     }, [idFolder])
 
     async function getFolders() {
-        await axios.get('http://localhost:4000/api/folders')
+        await axios.get(baseURL + '/api/folders')
             .then(function (res) {
                 setFolders(res.data)
             })
@@ -34,7 +35,7 @@ function ItemsList() {
 
     async function getFolder(idFolder) {
         if (idFolder !== undefined) {
-            await axios.get('http://localhost:4000/api/folders/' + idFolder)
+            await axios.get(baseURL + '/api/folders/' + idFolder)
                 .then(function (res) {
                     setFolder(res.data)
                 })
@@ -43,7 +44,7 @@ function ItemsList() {
 
     async function getItems(idFolder) {
         var url;
-        idFolder ? url = 'http://localhost:4000/api/items/folder/' + idFolder : url = 'http://localhost:4000/api/items'
+        idFolder ? url = baseURL + '/api/items/folder/' + idFolder : url = baseURL + '/api/items'
         await axios.get(url)
             .then(function (res) {
                 setItems(res.data)
@@ -52,7 +53,7 @@ function ItemsList() {
 
     async function saveItem() {
         if (data._id === '') {
-            await axios.post('http://localhost:4000/api/items', data)
+            await axios.post(baseURL + '/api/items', data)
                 .then(function (res) {
                     getItems(idFolder)
                     setData({
@@ -65,7 +66,7 @@ function ItemsList() {
                     alert(res.data.message)
                 })
         } else {
-            await axios.put('http://localhost:4000/api/items/' + data._id, data)
+            await axios.put(baseURL + '/api/items/' + data._id, data)
                 .then(function (res) {
                     getItems(idFolder)
                     setData({
@@ -81,14 +82,14 @@ function ItemsList() {
     }
 
     async function getItem(id) {
-        await axios.get('http://localhost:4000/api/items/' + id)
+        await axios.get(baseURL + '/api/items/' + id)
             .then(function (res) {
                 setData(res.data)
             })
     }
     async function deleteItem(id) {
         if (window.confirm('¿Do you want to delete this item?')) {
-            await axios.delete('http://localhost:4000/api/items/' + id)
+            await axios.delete(baseURL + '/api/items/' + id)
                 .then(function (res) {
                     getItems(idFolder)
                     alert(res.data.message)
@@ -109,7 +110,7 @@ function ItemsList() {
     async function handleCompleted(e) {
         const id = e.target.id;
         const completed = e.target.checked
-        await axios.put('http://localhost:4000/api/items/completed/' + id, { completed })
+        await axios.put(baseURL + '/api/items/completed/' + id, { completed })
             .then(function (res) {
                 getItems(idFolder)
                 setData({
