@@ -18,7 +18,7 @@ function ItemsList() {
     })
 
     let { idFolder } = useParams();
-    let baseURL = 'https://to-do-ensolvers.herokuapp.com';
+    let baseURL = 'https://to-do-ensolvers-backend.herokuapp.com';
 
     useEffect(() => {
         getItems(idFolder);

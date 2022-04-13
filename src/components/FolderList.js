@@ -17,7 +17,7 @@ function FolderList() {
         getFolders();
     }, [])
 
-    let baseURL = 'https://to-do-ensolvers.herokuapp.com';
+    let baseURL = 'https://to-do-ensolvers-backend.herokuapp.com';
 
     async function getFolders() {
         await axios.get(baseURL + '/api/folders')
