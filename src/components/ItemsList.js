@@ -1,38 +1,62 @@
 import { useState, useEffect } from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { useParams } from "react-router-dom";
 import axios from 'axios'
 
 function ItemsList() {
 
     const [items, setItems] = useState([])
+    const [folders, setFolders] = useState([])
+    const [folder, setFolder] = useState([])
     const [data, setData] = useState({
-        folder: 0,
-        title: '',
+        folderId: 0,
         content: '',
         userId: 1,
         _id: ''
     })
 
-    useEffect(() => {
-        getItems();
-    }, [])
+    let { idFolder } = useParams();
+    console.log(idFolder);
 
-    async function getItems() {
-        await axios.get('http://localhost:4000/api/items')
+    useEffect(() => {
+        getItems(idFolder);
+        getFolders();
+        getFolder(idFolder);
+    }, [idFolder])
+
+    async function getFolders() {
+        await axios.get('http://localhost:4000/api/folders')
+            .then(function (res) {
+                setFolders(res.data)
+            })
+    }
+
+    async function getFolder(idFolder) {
+        if (idFolder !== undefined) {
+            await axios.get('http://localhost:4000/api/folders/' + idFolder)
+                .then(function (res) {
+                    setFolder(res.data)
+                })
+        }
+    }
+
+    async function getItems(idFolder) {
+        var url;
+        idFolder ? url = 'http://localhost:4000/api/items/folder/' + idFolder : url = 'http://localhost:4000/api/items'
+        await axios.get(url)
             .then(function (res) {
                 setItems(res.data)
             })
     }
 
     async function saveItem() {
-        if (data._id == undefined) {
+        if (data._id === '') {
             await axios.post('http://localhost:4000/api/items', data)
                 .then(function (res) {
                     getItems()
                     setData({
-                        folder: 0,
-                        title: '',
+                        folderId: 0,
                         content: '',
                         userId: 1,
                         _id: ''
@@ -44,8 +68,7 @@ function ItemsList() {
                 .then(function (res) {
                     getItems()
                     setData({
-                        folder: 0,
-                        title: '',
+                        folderId: 0,
                         content: '',
                         userId: 1,
                         _id: ''
@@ -71,6 +94,15 @@ function ItemsList() {
         }
     }
 
+    function cleanItem() {
+        setData({
+            folderId: 0,
+            content: '',
+            userId: 1,
+            _id: ''
+        })
+    }
+
     function handleInput(e) {
         setData({ ...data, [e.target.name]: e.target.value })
     }
@@ -82,14 +114,18 @@ function ItemsList() {
                     <div className="card-body">
                         <Form.Group className="mb-3">
                             <Form.Label>Folder</Form.Label>
-
-                            <Form.Label>Title</Form.Label>
-                            <Form.Control
-                                name="title"
-                                placeholder="Enter a title"
-                                value={data.title}
+                            <Form.Select
+                                name="folderId"
+                                value={data.folderId}
                                 onChange={(e) => handleInput(e)}
-                            />
+                            >
+                                <option>Select one</option>
+                                {
+                                    folders.map((folder, index) =>
+                                        <option key={index} value={folder._id}>{folder.name}</option>
+                                    )
+                                }
+                            </Form.Select>
                             <Form.Label>Content</Form.Label>
                             <Form.Control
                                 as="textarea"
@@ -103,10 +139,17 @@ function ItemsList() {
                     <div className="card-footer">
                         <Button
                             variant="success"
-                            className="left"
+                            className="left m-1"
                             onClick={() => saveItem()}
                         >
                             Save
+                        </Button>
+                        <Button
+                            variant="primary"
+                            className="left m-1"
+                            onClick={() => cleanItem()}
+                        >
+                            Clean
                         </Button>
                     </div >
                 </div>
@@ -116,7 +159,6 @@ function ItemsList() {
                     <thead>
                         <tr>
                             <th>Folder</th>
-                            <th>Title</th>
                             <th>Content</th>
                             <th>Actions</th>
                         </tr>
@@ -124,8 +166,7 @@ function ItemsList() {
                     <tbody>
                         {items.map(item =>
                             <tr key={item._id}>
-                                <td>{item.folder}</td>
-                                <td>{item.title}</td>
+                                <td>{item.folderId ? item.folderId.name : ''}</td>
                                 <td>{item.content}</td>
                                 <td>
                                     <Button

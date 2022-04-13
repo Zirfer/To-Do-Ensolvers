@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from "react-router-dom";
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios'
@@ -24,7 +25,7 @@ function FolderList() {
     }
 
     async function saveFolder() {
-        if (data._id == undefined) {
+        if (data._id === '') {
             await axios.post('http://localhost:4000/api/folders', data)
                 .then(function (res) {
                     getFolders()
@@ -65,6 +66,14 @@ function FolderList() {
         }
     }
 
+    function cleanFolder() {
+        setData({
+            name: '',
+            userId: 1,
+            _id: ''
+        })
+    }
+
     function handleInput(e) {
         setData({ ...data, [e.target.name]: e.target.value })
     }
@@ -75,13 +84,11 @@ function FolderList() {
                 <div className="card" >
                     <div className="card-body">
                         <Form.Group className="mb-3">
-                            <Form.Label>Folder</Form.Label>
-
-                            <Form.Label>Title</Form.Label>
+                            <Form.Label>Folder name</Form.Label>
                             <Form.Control
-                                name="title"
-                                placeholder="Enter a title"
-                                value={data.title}
+                                name="name"
+                                placeholder="Enter a name"
+                                value={data.name}
                                 onChange={(e) => handleInput(e)}
                             />
                         </Form.Group>
@@ -89,10 +96,17 @@ function FolderList() {
                     <div className="card-footer">
                         <Button
                             variant="success"
-                            className="left"
+                            className="left m-1"
                             onClick={() => saveFolder()}
                         >
                             Save
+                        </Button>
+                        <Button
+                            variant="primary"
+                            className="left m-1"
+                            onClick={() => cleanFolder()}
+                        >
+                            Clean
                         </Button>
                     </div >
                 </div>
@@ -123,6 +137,12 @@ function FolderList() {
                                     >
                                         <FaTrashAlt />
                                     </Button>
+                                    <Link
+                                        className="btn btn-secondary justify-content left m-1"
+                                        to={"/items/viewFolder/" + folder._id}
+                                    >
+                                        View items
+                                    </Link>
                                 </td>
                             </tr>
                         )}

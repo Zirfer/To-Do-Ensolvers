@@ -11,8 +11,8 @@ const Navigation = () => {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link as={Link} to="/items">Create item</Nav.Link>
                         <Nav.Link as={Link} to="/folders">Create folder</Nav.Link>
+                        <Nav.Link as={Link} to="/items">Create item</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

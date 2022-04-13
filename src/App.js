@@ -17,8 +17,10 @@ function App() {
       </div>
       <div className="container">
         <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/items" element={<ItemsList />} />
+          <Route exact path="/" element={<Main />} />
+          <Route path="/items" element={<ItemsList />} >
+            <Route path="/items/viewFolder/:idFolder" element={<ItemsList />} />
+          </Route>
           <Route path="/folders" element={<FoldersList />} />
           <Route element={<NotFound />} />
         </Routes>
