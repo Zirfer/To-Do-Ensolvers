@@ -132,7 +132,7 @@ function ItemsList() {
         <div>
             {idFolder ?
                 <Row style={{ marginBottom: '-30px' }}>
-                    <Col md={9} sm={8} xs={8} className="p-4" auto>
+                    <Col md={9} sm={8} xs={8} className="p-4">
                         <h2>{'Folder > ' + folder.name}</h2>
                     </Col>
                     <Col md={3} sm={4} xs={4} className="p-4">
